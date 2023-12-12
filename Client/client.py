@@ -4,13 +4,11 @@ import time
 import sys
 
 BUFFER_SIZE = 4096
-HOST = '127.0.0.1'
 PORT = 5000
-BACKUP_FREQUENCY = 20 #seconds
 
 def sendBackup():
     clientsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    clientsock.connect((HOST, PORT))
+    clientsock.connect((host, PORT))
 
     filesize = os.path.getsize(filename)
     clientsock.sendall(str(filesize).encode())
@@ -25,8 +23,9 @@ def sendBackup():
         print(confirm)
         clientsock.close()
 
-
+host = input("Enter your server's IPv4 Address:")
 filename = input("Relative or absolute path of file to backup:")
+backup_frequency = int(input("Your required backup frequency in seconds:")) #seconds
 
 try:
     filesize = os.path.getsize(filename)
@@ -36,13 +35,13 @@ except Exception as e:
 
 try:
     clientsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    clientsock.connect((HOST, PORT))
+    clientsock.connect((host, PORT))
     clientsock.sendall(f"{filename}".encode("utf-8"))
     clientsock.close()
 
     while True:
         sendBackup()
-        time.sleep(BACKUP_FREQUENCY)
+        time.sleep(backup_frequency)
 
 except Exception as exception:
     print(f"Error: {exception}")
